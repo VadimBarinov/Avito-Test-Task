@@ -20,7 +20,7 @@ router = APIRouter(tags=["auth"])
 
 
 @router.post("/dummy-login/", summary="Получение тестового токена", response_model=dict)
-def dummy_login(data: DummyLogin):
+def dummy_login(data: Annotated[DummyLogin, Depends()]):
     token = create_access_token(
         user_id=str(uuid.uuid4()),
         role=data.role,
