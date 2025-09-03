@@ -1,0 +1,4 @@
+PVZ_TABLE_NAME = "pvz"
+RECEPTION_TABLE_NAME = "reception"
+PRODUCT_TABLE_NAME = "product"
+USERS_TABLE_NAME = "users"

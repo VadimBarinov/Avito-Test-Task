@@ -1,17 +1,24 @@
 import uuid
+from typing import Annotated
 
 from fastapi import (
     APIRouter,
+    HTTPException,
+    status,
 )
+from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.auth import create_new_user, get_user
 from auth.helpers import create_access_token
+from core.db_helper import db_helper
 from core.schemas.auth import DummyLogin
-
+from core.schemas.users import UserRead, UserCreate
 
 router = APIRouter(tags=["auth"])
 
 
-@router.post("/dummy-login", summary="Получение тестового токена", response_model=dict)
+@router.post("/dummy-login/", summary="Получение тестового токена", response_model=dict)
 def dummy_login(data: DummyLogin):
     token = create_access_token(
         user_id=str(uuid.uuid4()),
@@ -22,3 +29,31 @@ def dummy_login(data: DummyLogin):
         "access_token": token,
     }
 
+
+@router.post("/register/", summary="Регистрация нового пользователя", response_model=dict)
+async def register_user(
+        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        user: Annotated[UserCreate, Depends()],
+):
+    created_user = await create_new_user(session=session, user=user)
+    return {
+        "message": "Пользователь зарегистрирован!",
+        "user_id": created_user,
+    }
+
+
+@router.get("/get-by-id/{user_id}/", summary="Получение пользователя по ID", response_model=UserRead)
+async def get_user_by_id(
+        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        user_id: str,
+):
+    try:
+        found_user = await get_user(session=session, user_id=uuid.UUID(user_id))
+        if not found_user:
+            raise ValueError
+        return found_user
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Неверный запрос!"
+        )
