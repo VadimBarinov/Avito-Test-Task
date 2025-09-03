@@ -9,11 +9,12 @@ from fastapi import (
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.auth import create_new_user, get_user, validate_auth_user
+from auth.auth import create_new_user, get_user, validate_auth_user, get_user_role
 from auth.helpers import create_access_token
 from core.db_helper import db_helper
 from core.schemas.auth import DummyLogin, TokenInfo
 from core.schemas.users import UserRead, UserCreate, UserBase
+
 
 router = APIRouter(tags=["auth"])
 
@@ -47,9 +48,14 @@ async def login_user(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         user: Annotated[UserBase, Depends()],
 ):
-    await validate_auth_user(session=session, user=user)
-
-
+    found_user = await validate_auth_user(session=session, user=user)
+    access_token = create_access_token(
+        user_id=str(found_user.id),
+        role=get_user_role(found_user),
+    )
+    return TokenInfo(
+        access_token=access_token,
+    )
 
 
 @router.get("/get-by-id/{user_id}/", summary="Получение пользователя по ID", response_model=UserRead)

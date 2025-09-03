@@ -7,6 +7,7 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.utils import hash_password, validate_password
+from core.schemas.auth import RoleEnum
 from core.schemas.users import UserCreate, UserRead, UserBase
 from crud.users import UserCRUD
 
@@ -52,7 +53,7 @@ async def get_user(
 async def validate_auth_user(
         session: AsyncSession,
         user: UserBase,
-) -> bool:
+) -> UserRead:
     unauthed_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Неверные учетные данные!"
@@ -68,4 +69,10 @@ async def validate_auth_user(
             hashed_password=found_user.password.encode()
     ):
         raise unauthed_exc
-    return True
+    return found_user
+
+
+def get_user_role(user: UserRead) -> RoleEnum:
+    if user.is_moderator:
+        return RoleEnum.moderator
+    return RoleEnum.employee
