@@ -9,7 +9,7 @@ from fastapi import (
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.auth import create_new_user, get_user
+from auth.auth import create_new_user, get_user, validate_auth_user
 from auth.helpers import create_access_token
 from core.db_helper import db_helper
 from core.schemas.auth import DummyLogin, TokenInfo
@@ -47,7 +47,8 @@ async def login_user(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         user: Annotated[UserBase, Depends()],
 ):
-    validate_auth_user(session=session, user=user)
+    await validate_auth_user(session=session, user=user)
+
 
 
 

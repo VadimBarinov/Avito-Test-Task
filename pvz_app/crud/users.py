@@ -40,7 +40,7 @@ class UserCRUD(BaseCRUD):
             cls,
             session: AsyncSession,
             email: EmailStr
-    ) -> Sequence[UserRead]:
+    ) -> UserRead | None:
         stmt = text("""
             SELECT * FROM %s WHERE email = :email;
         """ % (cls.table, )).bindparams(email=email)

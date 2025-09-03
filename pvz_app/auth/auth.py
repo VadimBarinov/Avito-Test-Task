@@ -6,7 +6,7 @@ from fastapi import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.utils import hash_password
+from auth.utils import hash_password, validate_password
 from core.schemas.users import UserCreate, UserRead, UserBase
 from crud.users import UserCRUD
 
@@ -57,4 +57,15 @@ async def validate_auth_user(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Неверные учетные данные!"
     )
-    found_user = UserCRUD.get_user_by_email()
+    found_user = await UserCRUD.get_user_by_email(
+        session=session,
+        email=user.email,
+    )
+    if not found_user:
+        raise unauthed_exc
+    if not validate_password(
+            password=user.password,
+            hashed_password=found_user.password.encode()
+    ):
+        raise unauthed_exc
+    return True
