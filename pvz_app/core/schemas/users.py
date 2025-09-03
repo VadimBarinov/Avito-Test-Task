@@ -9,14 +9,13 @@ from pydantic import (
 
 class UserBase(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=4)
+    password: str = Field(..., min_length=4)\
+
+
+class UserCreate(UserBase):
     is_employee: bool = Field(False)
     is_moderator: bool = Field(False)
 
 
-class UserCreate(UserBase):
-    pass
-
-
-class UserRead(UserBase):
+class UserRead(UserCreate):
     id: uuid.UUID

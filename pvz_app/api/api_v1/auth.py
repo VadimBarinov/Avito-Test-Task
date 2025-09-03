@@ -12,8 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.auth import create_new_user, get_user
 from auth.helpers import create_access_token
 from core.db_helper import db_helper
-from core.schemas.auth import DummyLogin
-from core.schemas.users import UserRead, UserCreate
+from core.schemas.auth import DummyLogin, TokenInfo
+from core.schemas.users import UserRead, UserCreate, UserBase
 
 router = APIRouter(tags=["auth"])
 
@@ -40,6 +40,15 @@ async def register_user(
         "message": "Пользователь зарегистрирован!",
         "user_id": created_user,
     }
+
+
+@router.post("/login/", summary="Авторизация пользователя", response_model=TokenInfo)
+async def login_user(
+        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        user: Annotated[UserBase, Depends()],
+):
+    validate_auth_user(session=session, user=user)
+
 
 
 @router.get("/get-by-id/{user_id}/", summary="Получение пользователя по ID", response_model=UserRead)

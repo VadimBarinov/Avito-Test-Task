@@ -7,7 +7,7 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.utils import hash_password
-from core.schemas.users import UserCreate, UserRead
+from core.schemas.users import UserCreate, UserRead, UserBase
 from crud.users import UserCRUD
 
 
@@ -15,11 +15,11 @@ async def create_new_user(
         session: AsyncSession,
         user: UserCreate,
 ) -> UserRead:
-    found_users = await UserCRUD.get_users_by_email(
+    found_user = await UserCRUD.get_user_by_email(
         session=session,
         email=user.email,
     )
-    if found_users:
+    if found_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Пользователь с такой почтой уже существует!"
@@ -47,3 +47,14 @@ async def get_user(
         user_id=user_id,
     )
     return found_user
+
+
+async def validate_auth_user(
+        session: AsyncSession,
+        user: UserBase,
+) -> bool:
+    unauthed_exc = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Неверные учетные данные!"
+    )
+    found_user = UserCRUD.get_user_by_email()

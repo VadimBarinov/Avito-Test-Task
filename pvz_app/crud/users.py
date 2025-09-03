@@ -36,7 +36,7 @@ class UserCRUD(BaseCRUD):
         )
 
     @classmethod
-    async def get_users_by_email(
+    async def get_user_by_email(
             cls,
             session: AsyncSession,
             email: EmailStr
@@ -44,20 +44,17 @@ class UserCRUD(BaseCRUD):
         stmt = text("""
             SELECT * FROM %s WHERE email = :email;
         """ % (cls.table, )).bindparams(email=email)
-        found_users = await session.execute(stmt)
-
-        user_result = [
-            UserRead(
-                id=user.id,
-                email=user.email,
-                password=user.password,
-                is_employee=user.is_employee,
-                is_moderator=user.is_moderator,
-            )
-            for user in found_users
-        ]
-
-        return user_result
+        result = await session.execute(stmt)
+        found_user = result.first()
+        if not found_user:
+            return None
+        return UserRead(
+            id=found_user.id,
+            email=found_user.email,
+            password=found_user.password,
+            is_employee=found_user.is_employee,
+            is_moderator=found_user.is_moderator,
+        )
 
     @classmethod
     async def user_create(
