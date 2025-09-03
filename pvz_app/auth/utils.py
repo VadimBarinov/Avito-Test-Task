@@ -13,7 +13,7 @@ def encode_jwt(
         payload: dict,
         private_key: str = auth_data.PRIVATE_KEY_PATH.read_text(),
         algorithm: str = auth_data.ALGORITHM,
-        expire_timedelta: timedelta = 0,
+        expire_timedelta: timedelta | None = None,
 ) -> str:
     to_encode = payload.copy()
     now = datetime.now(timezone.utc)

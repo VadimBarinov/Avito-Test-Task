@@ -22,3 +22,10 @@ CREATE TABLE IF NOT EXISTS product (
     PRIMARY KEY (id),
     FOREIGN KEY (reception_id) REFERENCES reception (id)
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+
+)
