@@ -8,6 +8,7 @@ TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
 
 SUB_TYPE_FIELD = "sub"
+DUMMY_LOGIN_TYPE = "dummy-login"
 ROLE_TYPE_FIELD = "role"
 
 
@@ -27,11 +28,11 @@ def create_jwt(
 
 
 def create_access_token(
-        user_id: str | None = None,
+        sub: str,
         role: RoleEnum = RoleEnum.employee,
 ) -> str:
     payload = {
-        SUB_TYPE_FIELD: user_id,
+        SUB_TYPE_FIELD: sub,
         ROLE_TYPE_FIELD: role,
     }
     expire_timedelta = timedelta(minutes=settings.auth_jwt.ACCESS_TOKEN_EXPIRE_MINUTES)
