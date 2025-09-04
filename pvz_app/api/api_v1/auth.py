@@ -41,7 +41,7 @@ async def register_user(
     created_user = await create_new_user(session=session, user=user)
     return {
         "message": "Пользователь зарегистрирован!",
-        "user_id": created_user,
+        "user": created_user,
     }
 
 
