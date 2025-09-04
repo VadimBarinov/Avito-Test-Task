@@ -88,7 +88,10 @@ class GetterRoleFromPayload:
     ):
         sub = payload.get(SUB_TYPE_FIELD)
         if sub != DUMMY_LOGIN_TYPE:
-            await get_user_by_token_payload(payload=payload)
+            await get_user_by_token_payload(
+                session=session,
+                payload=payload,
+            )
         return get_role_by_token_payload(payload=payload)
 
 

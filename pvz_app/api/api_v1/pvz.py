@@ -4,13 +4,12 @@ from fastapi import (
     APIRouter,
     Depends
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.db_helper import db_helper
+from auth.validation import get_current_auth_user_is_moderator
 
 router = APIRouter(tags=["pvz", ])
 
 
-@router.post("", summary="Создание ПВЗ (только для модераторов)")
-async def create_pvz(session: Annotated[AsyncSession, Depends(db_helper.session_getter)]):
+@router.post("/", summary="Создание ПВЗ (только для модераторов)")
+async def create_pvz(is_moderator: Annotated[bool, Depends(get_current_auth_user_is_moderator)]):
     pass
