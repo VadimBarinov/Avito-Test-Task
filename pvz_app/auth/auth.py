@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import (
     HTTPException,
     status,
@@ -37,17 +35,6 @@ async def create_new_user(
             detail="Пользователь не зарегистрирован!"
         )
     return added_user_result
-
-
-async def get_user(
-        session: AsyncSession,
-        user_id: uuid.UUID,
-) -> UserRead:
-    found_user = await UserCRUD.get_by_id(
-        session=session,
-        user_id=user_id,
-    )
-    return found_user
 
 
 async def validate_auth_user(

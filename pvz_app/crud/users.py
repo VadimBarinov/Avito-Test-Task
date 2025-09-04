@@ -15,27 +15,6 @@ class UserCRUD(BaseCRUD):
     table = USERS_TABLE_NAME
 
     @classmethod
-    async def get_by_id(
-            cls,
-            session: AsyncSession,
-            user_id: uuid.UUID,
-    ) -> UserRead | None:
-        stmt = text("""
-                SELECT * FROM %s WHERE id = :user_id;
-            """ % (cls.table,)).bindparams(user_id=user_id)
-        result = await session.execute(stmt)
-        found_user = result.first()
-        if not found_user:
-            return None
-        return UserRead(
-            id=found_user.id,
-            email=found_user.email,
-            password=found_user.password,
-            is_employee=found_user.is_employee,
-            is_moderator=found_user.is_moderator,
-        )
-
-    @classmethod
     async def get_user_by_email(
             cls,
             session: AsyncSession,

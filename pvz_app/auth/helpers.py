@@ -7,6 +7,9 @@ from core.schemas.auth import RoleEnum
 TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
 
+SUB_TYPE_FIELD = "sub"
+ROLE_TYPE_FIELD = "role"
+
 
 def create_jwt(
         token_type: str,
@@ -22,13 +25,14 @@ def create_jwt(
         expire_timedelta=expire_timedelta,
     )
 
+
 def create_access_token(
-        user_id: str,
+        user_id: str | None = None,
         role: RoleEnum = RoleEnum.employee,
 ) -> str:
     payload = {
-        "sub": user_id,
-        "role": role,
+        SUB_TYPE_FIELD: user_id,
+        ROLE_TYPE_FIELD: role,
     }
     expire_timedelta = timedelta(minutes=settings.auth_jwt.ACCESS_TOKEN_EXPIRE_MINUTES)
     return create_jwt(
