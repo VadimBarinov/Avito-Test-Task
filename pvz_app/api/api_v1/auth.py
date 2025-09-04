@@ -63,7 +63,7 @@ async def login_user(
 @router.get("/me/", summary="Получить информацию о себе по токену", response_model=dict)
 async def get_me(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        payload: Annotated[dict, Depends(get_current_token_payload)]
+        payload: Annotated[dict, Depends(get_current_token_payload)],
 ):
     sub = payload.get(SUB_TYPE_FIELD)
     if sub == DUMMY_LOGIN_TYPE:
@@ -72,7 +72,7 @@ async def get_me(
         }
     user = await get_user_by_token_payload(
         session=session,
-        payload=payload
+        payload=payload,
     )
     return {
         "user": user
